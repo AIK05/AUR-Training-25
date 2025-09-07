@@ -5,16 +5,16 @@ import cv2
 img = cv2.imread('shapes.jpg')
 out = img.copy() #ignore status
 
-img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) #ignore status
-out_rgb = cv2.cvtColor(out, cv2.COLOR_BGR2RGB)
-red_mask= cv2.inRange (out ,np.array([0, 0, 100]),np.array([50,50,255]))
-blue_mask= cv2.inRange (out ,np.array([100, 0, 0]),np.array([255,50,50]))
-black_mask= cv2.inRange (out ,np.array([0, 0, 0]),np.array([50,50,50]))
+img_rgb = img[..., ::-1] #ignore status
+red_mask = (out[..., 2] > 100) & (out[..., 0] < 50) & (out[..., 1] < 50)    # High red, low blue/green
+blue_mask = (out[..., 0] > 100) & (out[..., 1] < 50) & (out[..., 2] < 50)    # High blue, low green/red
+black_mask = (out[..., 0] < 50) & (out[..., 1] < 50) & (out[..., 2] < 50)    # All channels low
 
-out[red_mask>  0] = [255, 0, 0]
-out[blue_mask > 0] = [0, 0, 0]
-out[black_mask> 0]=[0, 0, 255]
-out_rgb = cv2.cvtColor(out, cv2.COLOR_BGR2RGB)
+out[red_mask] = [255, 0, 0]     
+out[blue_mask] = [0, 0, 0]      
+out[black_mask] = [0, 0, 255]   
+
+out_rgb = out[..., ::-1]
 
 fig, axes = plt.subplots(1, 2)
 axes[0].imshow(img_rgb)
